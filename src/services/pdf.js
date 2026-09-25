@@ -1,5 +1,5 @@
-import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
 import { formatCurrency, formatDate } from './format.js'
 import { businessSettings } from './mockData.js'
 
@@ -72,7 +72,7 @@ export function downloadOrderPDF(order) {
     formatCurrency((item.unit_price || item.price || 0) * item.quantity),
   ])
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: 106,
     head: [['#', 'Item Description', 'Qty', 'Unit Price', 'Total']],
     body: tableData,
@@ -92,7 +92,7 @@ export function downloadOrderPDF(order) {
     margin: { left: 15, right: 15 },
   })
 
-  const finalY = doc.lastAutoTable.finalY + 10
+  const finalY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : 130) + 10
 
   // Total Summary
   doc.setFont('helvetica', 'bold')
@@ -187,7 +187,7 @@ export function downloadQuotePDF(quote) {
     ['Special Requirements', quote.requirements || 'Standard Luxury Catering'],
   ]
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: 110,
     head: [['Parameter', 'Details']],
     body: quoteRows,
@@ -207,7 +207,7 @@ export function downloadQuotePDF(quote) {
     margin: { left: 15, right: 15 },
   })
 
-  const finalY = doc.lastAutoTable.finalY + 12
+  const finalY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : 140) + 12
 
   if (quote.quoted_amount) {
     doc.setFont('helvetica', 'bold')
@@ -233,7 +233,7 @@ export function downloadQuotePDF(quote) {
   doc.setTextColor(80, 70, 60)
   doc.text('1. All items handcrafted fresh using premium quality ingredients.', 20, termsY + 12)
   doc.text('2. Orders confirmed upon 50% advance deposit.', 20, termsY + 17)
-  doc.text('3. Direct WhatsApp support: 9840293144.', 20, termsY + 22)
+  doc.text(`3. Direct WhatsApp support: ${businessSettings.phone}`, 20, termsY + 22)
 
   // Footer
   doc.setTextColor(120, 100, 90)
@@ -270,7 +270,7 @@ export function downloadMenuPDF() {
   doc.setFont('helvetica', 'bold')
   doc.text('OFFICIAL MENU & PRICE LIST', 15, 55)
   doc.setFont('helvetica', 'normal')
-  doc.text('Orders Undertaken | Phone: 9840293144 | Manager: Saleem Basha', 195, 55, { align: 'right' })
+  doc.text(`Orders Undertaken | Phone: ${businessSettings.phone} | Manager: Saleem Basha`, 195, 55, { align: 'right' })
 
   doc.setDrawColor(220, 200, 190)
   doc.line(15, 60, 195, 60)
@@ -289,7 +289,7 @@ export function downloadMenuPDF() {
     ['Blue Berry Milkshake', 'Refreshing thick blueberry milk drink', '₹40 (glass) / ₹60 (shake)'],
   ]
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: 65,
     head: [['Product Name', 'Description', 'Price']],
     body: menuItems,
@@ -318,7 +318,7 @@ export function downloadMenuPDF() {
   doc.setTextColor(120, 100, 90)
   doc.setFont('helvetica', 'italic')
   doc.setFontSize(9)
-  doc.text('To place an order or book catering: Call / WhatsApp 9840293144', 105, 282, { align: 'center' })
+  doc.text(`To place an order or book catering: Call / WhatsApp ${businessSettings.phone}`, 105, 282, { align: 'center' })
   doc.text('Instagram: @BLODYSWEET_BYFAFA', 105, 287, { align: 'center' })
 
   doc.save('BLOODY_Sweet_Official_Menu.pdf')
